@@ -54,6 +54,7 @@ import com.cronutils.utils.VisibleForTesting ;
 public class ExecutionTime {
 	private static final Logger log = LoggerFactory.getLogger(ExecutionTime.class);
 
+	private Cron cron ;
 	private CronDefinition cronDefinition;
     private FieldValueGenerator yearsValueGenerator;
     private CronField daysOfWeekCronField;
@@ -65,9 +66,11 @@ public class ExecutionTime {
     private TimeNode seconds;
 
     @VisibleForTesting
-    ExecutionTime(CronDefinition cronDefinition, FieldValueGenerator yearsValueGenerator, CronField daysOfWeekCronField,
+    ExecutionTime(Cron cron, FieldValueGenerator yearsValueGenerator, CronField daysOfWeekCronField,
                   CronField daysOfMonthCronField, TimeNode months, TimeNode hours,
                   TimeNode minutes, TimeNode seconds) {
+        this.cron = Preconditions.checkNotNull( cron ) ;
+        this.cronDefinition = this.cron.getCronDefinition() ;
         this.cronDefinition = Preconditions.checkNotNull(cronDefinition);
         this.yearsValueGenerator = Preconditions.checkNotNull(yearsValueGenerator);
         this.daysOfWeekCronField = Preconditions.checkNotNull(daysOfWeekCronField);
@@ -77,6 +80,10 @@ public class ExecutionTime {
         this.minutes = Preconditions.checkNotNull(minutes);
         this.seconds = Preconditions.checkNotNull(seconds);
     }
+    
+    public Cron getCron() {
+        return this.cron ;
+    }
 
     /**
      * Creates execution time for given Cron
@@ -85,7 +92,7 @@ public class ExecutionTime {
      */
     public static ExecutionTime forCron(Cron cron) {
         Map<CronFieldName, CronField> fields = cron.retrieveFieldsAsMap();
-        ExecutionTimeBuilder executionTimeBuilder = new ExecutionTimeBuilder(cron.getCronDefinition());
+        ExecutionTimeBuilder executionTimeBuilder = new ExecutionTimeBuilder(cron);
         for(CronFieldName name : CronFieldName.values()){
             if(fields.get(name)!=null){
                 switch (name){
