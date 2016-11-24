@@ -509,4 +509,8 @@ public class ExecutionTime {
         }
         return date;
     }
+    
+    public String toString() {
+        return cron.asString() ;
+    }
 }
